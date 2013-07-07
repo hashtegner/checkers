@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+SERVER_PORT=3000 CLIENT_IP=localhost CLIENT_PORT=3001 START=true ./run
+

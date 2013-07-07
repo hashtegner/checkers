@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+require "bundler"
+Bundler.require :default
+
+$LOAD_PATH << "./lib"
+
+require "checkers"
+
+Game.new.run
