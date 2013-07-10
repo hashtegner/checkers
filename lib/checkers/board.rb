@@ -45,7 +45,7 @@ class Board
     captured = simple_capture_move?(move) or queen_capture_move?(move)
     if captured
       capture_piece!(captured)
-      puts "Captured #{captured}"
+      p "Captured #{captured}"
     end
 
     move_piece(move)
@@ -71,7 +71,7 @@ class Board
     return unless x == 0 or x == 6
     piece = get_piece(x, y)
     unless piece.queen?
-      puts "#{x} #{y} is queen!"
+      p "#{x} #{y} is queen!"
       piece.queen = true
     end
   end

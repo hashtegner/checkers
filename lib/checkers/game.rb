@@ -46,8 +46,8 @@ class Game
         continue = action.continue?
       rescue Exception => e
         player.negative!
-        puts "#{current} make invalid move"
-        puts "#{current} => #{e.message}"
+        p "#{current} make invalid move"
+        p "#{current} => #{e.message}"
         print e.backtrace.join("\n")
         exit
       end
@@ -76,7 +76,7 @@ class Game
       print "\n"
     end
 
-    puts "  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |"
+    print "  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |"
     print "\n"
   end
 end

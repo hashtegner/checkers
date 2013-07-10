@@ -7,9 +7,12 @@ class HostPlayer < Player
 
   def get_action
     trace "Host player move"
-
     heuristic = Heuristic.new(Board.instance.clone, self.class.color)
     move = heuristic.get_move
+
+    sleep 2.5
+
+    trace "Host player calculates #{move}"
 
     action = Actions::MovePiece.new [
       6, 0, move[:from_x], move[:from_y], move[:to_x], move[:to_y]
