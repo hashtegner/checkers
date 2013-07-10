@@ -12,5 +12,13 @@ module Actions
     def finish_game?
       false
     end
+
+    def positive?
+      false
+    end
+
+    def negative?
+      false
+    end
   end
 end

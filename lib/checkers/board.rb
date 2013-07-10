@@ -2,7 +2,13 @@ require "ostruct"
 
 class Board
   include Validations::SimplePieceMove
+  include Validations::QueenPieceMove
   include Validations::Cells
+
+  private_class_method :new
+  def self.instance
+    @@instance ||= new
+  end
 
   attr_accessor :grid
   def initialize
@@ -36,13 +42,19 @@ class Board
       validate_south_move!(move)
     end
 
-    captured = simple_capture_move?(move)
+    captured = simple_capture_move?(move) or queen_capture_move?(move)
     if captured
       capture_piece!(captured)
       puts "Captured #{captured}"
     end
 
     move_piece(move)
+
+    if action.continue?
+      validate_continue!(move[2], move[3])
+    else
+      make_queen!(move[2], move[3])
+    end
   end
 
   def move_piece(move)
@@ -53,6 +65,28 @@ class Board
 
   def capture_piece!(pos)
     set_piece(pos[0], pos[1], nil)
+  end
+
+  def make_queen!(x, y)
+    return unless x == 0 or x == 6
+    piece = get_piece(x, y)
+    unless piece.queen?
+      puts "#{x} #{y} is queen!"
+      piece.queen = true
+    end
+  end
+
+  def validate_continue!(x, y)
+    raise "Invalid continuos move" unless valid_continue?(x, y)
+    true
+  end
+
+  def valid_continue?(x, y)
+    has_capture?(x, y)
+  end
+
+  def has_capture?(x, y)
+    has_simple_capture?(x, y) or has_queen_capture?(x, y)
   end
 
   def validate_north_move!(move)
@@ -79,7 +113,7 @@ class Board
     return true if simple_nw_move?(move) or simple_ne_move?(move)
     return true if simple_capture_move?(move)
 
-    return true if queen_move?(move)
+    return true if queen_simple_move?(move)
     return true if queen_capture_move?(move)
     raise "Invalid north direction for #{move}"
   end

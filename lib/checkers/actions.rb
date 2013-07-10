@@ -1,0 +1,6 @@
+require "checkers/actions/parser"
+require "checkers/actions/action"
+require "checkers/actions/move_piece"
+require "checkers/actions/positive"
+require "checkers/actions/negative"
+require "checkers/actions/factory"

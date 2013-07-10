@@ -2,63 +2,67 @@ class Game
   attr_accessor :board, :current, :white, :black
 
   def initialize
-    @board = Board.new
+    @board = Board.instance
 
     if ENV["START"]
-      @white = HostPlayer.new
-      @black = RemotePlayer.new
+      @white = HostPlayer
+      @black = RemotePlayer
     else
-      @white = RemotePlayer.new
-      @black = HostPlayer.new
+      @white = RemotePlayer
+      @black = HostPlayer
     end
+
+    @white.color = Piece::WHITE
+    @black.color = Piece::BLACK
+
+    @current = @white
   end
 
   def run
     display
-    white_make_action
+    make_move
   end
 
   private
-  def white_make_action
-    @current = white
-    connect_and_action
-  end
+  def make_move
+    continue = current.start_move(&method(:on_move))
 
-  def connect_and_action
-    continue = current.client(&method(:make_action))
     unless continue
       switch_player!
     end
 
-    display
-    connect_and_action
+    make_move
   end
 
-  def current_piece_color
-    return Piece::WHITE if current == white
-    Piece::BLACK
-  end
-
-  def make_action(client)
-    action = client.action
+  def on_move(player)
+    action = player.get_action
     continue = false
 
     if action.move_piece?
       begin
-        board.move_piece! action, current_piece_color
+        board.move_piece! action, current.color
+        player.positive!
+
+        continue = action.continue?
       rescue Exception => e
+        player.negative!
         puts "#{current} make invalid move"
         puts "#{current} => #{e.message}"
         print e.backtrace.join("\n")
         exit
       end
+    elsif action.finish_game?
+      p "Finish game"
     end
+
+    display
+
+    continue
   end
 
   def switch_player!
     @current = (current == white)? black : white
   end
-
 
   def display
     8.times do |i|

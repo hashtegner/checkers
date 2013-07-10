@@ -1,15 +1,15 @@
 module Actions
   class Factory
     def self.get_action(data)
-      action_code = data.chars[0].to_i
+      action_code = data[0].to_i
 
       action = case action_code
+      when 4
+        Actions::Positive.new data
+      when 5
+        Actions::Positive.new data
       when 6
         Actions::MovePiece.new data
-      when 7
-        Actions::RemovePiece.new data
-      when 8
-        Actions::MakeQueen.new data
       when 9
         Actions::FinishGame.new data
       end
