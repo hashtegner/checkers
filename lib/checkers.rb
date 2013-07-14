@@ -1,4 +1,3 @@
-require "checkers/validations"
 require "checkers/actions"
 require "checkers/heuristic"
 require "checkers/player"

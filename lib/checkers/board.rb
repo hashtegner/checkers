@@ -1,10 +1,6 @@
 require "ostruct"
 
 class Board
-  include Validations::SimplePieceMove
-  include Validations::QueenPieceMove
-  include Validations::Cells
-
   private_class_method :new
   def self.instance
     @@instance ||= new
@@ -94,7 +90,6 @@ class Board
   end
 
   private
-
   def make_queen(x, y)
     cell = get_cell(x, y)
     cell.piece.make_queen!(cell)
