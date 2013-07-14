@@ -171,14 +171,14 @@ module Validations
       false
     end
 
-    def has_queen_capture?(x, y)
-      has_queen_capture_sw?(x, y) or
-      has_queen_capture_se?(x, y) or
-      has_simple_capture_nw?(x, y) or
-      has_simple_capture_ne?(x, y)
+    def has_queen_capture?(x, y, return_capture_pos = true)
+      has_queen_capture_sw?(x, y, return_capture_pos) or
+      has_queen_capture_se?(x, y, return_capture_pos) or
+      has_queen_capture_nw?(x, y, return_capture_pos) or
+      has_queen_capture_ne?(x, y, return_capture_pos)
     end
 
-    def has_queen_capture_sw?(x, y)
+    def has_queen_capture_sw?(x, y, return_capture_pos= true)
       piece = get_piece(x, y)
       pos_x, pos_y = x, y
 
@@ -193,14 +193,17 @@ module Validations
         if possible_piece and possible_piece.color != piece.color
           next_cell = get_cell(pos_x -1, pos_y - 1)
 
-          return [pos_x, pos_y] if next_cell and next_cell.piece.nil?
+          if next_cell and next_cell.piece.nil?
+            return [pos_x, pos_y] if return_capture_pos
+            return [pox_x - 1, pos_y - 1]
+          end
         end
       end
 
       false
     end
 
-    def has_queen_capture_nw?(x, y)
+    def has_queen_capture_nw?(x, y, return_capture_pos = true)
       piece = get_piece(x, y)
       pos_x, pos_y = x, y
 
@@ -215,14 +218,17 @@ module Validations
         if possible_piece and possible_piece.color != piece.color
           next_cell = get_cell(pos_x +1, pos_y - 1)
 
-          return [pos_x, pos_y] if next_cell and next_cell.piece.nil?
+          if next_cell and next_cell.piece.nil?
+            return [pos_x, pos_y] if return_capture_pos
+            return [pox_x + 1, pos_y - 1]
+          end
         end
       end
 
       false
     end
 
-    def has_queen_capture_se?(x, y)
+    def has_queen_capture_se?(x, y, return_capture_pos = true)
       piece = get_piece(x, y)
       pos_x, pos_y = x, y
 
@@ -237,14 +243,18 @@ module Validations
         if possible_piece and possible_piece.color != piece.color
           next_cell = get_cell(pos_x -1, pos_y + 1)
 
-          return [pos_x, pos_y] if next_cell and next_cell.piece.nil?
+          if next_cell and next_cell.piece.nil?
+            return [pos_x, pos_y] if return_capture_pos
+            return [pox_x - 1, pos_y + 1]
+          end
+
         end
       end
 
       false
     end
 
-    def has_queen_capture_ne?(x, y)
+    def has_queen_capture_ne?(x, y, return_capture_pos = true)
       piece = get_piece(x, y)
       pos_x, pos_y = x, y
 
@@ -259,7 +269,10 @@ module Validations
         if possible_piece and possible_piece.color != piece.color
           next_cell = get_cell(pos_x +1, pos_y + 1)
 
-          return [pos_x, pos_y] if next_cell and next_cell.piece.nil?
+          if next_cell and next_cell.piece.nil?
+            return [pos_x, pos_y] if return_capture_pos
+            return [pox_x + 1, pos_y + 1]
+          end
         end
       end
 

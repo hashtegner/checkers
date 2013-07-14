@@ -36,97 +36,59 @@ class Board
 
   def move_piece!(action, color)
     move = action.move
-    if Piece::WHITE == color
-      validate_north_move!(move)
-    else
-      validate_south_move!(move)
+    cell = get_cell(move[0], move[1])
+    piece = cell.piece
+
+    raise "Invalid move *color*" unless piece and piece.color == color
+
+    allowed = allowed_moves(cell)
+    raise "Invalid move * allow -> #{allowed} *" unless allowed.include?([move[2], move[3]])
+    p "Allowed #{allowed}"
+
+    capture = move_capture(cell, move[2], move[3])
+    if capture
+      unless action.attack?
+        raise "Invalid capture. Movement capture piece but is not identified in action."
+      end
+
+      p "Capture #{capture}"
+
+      capture_piece(capture[0], capture[1])
     end
 
-    captured = simple_capture_move?(move) or queen_capture_move?(move)
-    if captured
-      capture_piece!(captured)
-      p "Captured #{captured}"
+    move_piece(move[0], move[1], move[2], move[3])
+
+    unless action.continue?
+      make_queen(move[2], move[3])
     end
-
-    move_piece(move)
-
-    if action.continue?
-      validate_continue!(move[2], move[3])
-    else
-      make_queen!(move[2], move[3])
-    end
-  end
-
-  def move_piece(move)
-    piece = get_piece move[0], move[1]
-    set_piece move[2], move[3], piece
-    set_piece move[0], move[1], nil
-  end
-
-  def capture_piece!(pos)
-    set_piece(pos[0], pos[1], nil)
-  end
-
-  def make_queen!(x, y)
-    return unless x == 0 or x == 6
-    piece = get_piece(x, y)
-    unless piece.queen?
-      p "#{x} #{y} is queen!"
-      piece.queen = true
-    end
-  end
-
-  def validate_continue!(x, y)
-    raise "Invalid continuos move" unless valid_continue?(x, y)
-    true
-  end
-
-  def valid_continue?(x, y)
-    has_capture?(x, y)
-  end
-
-  def has_capture?(x, y)
-    has_simple_capture?(x, y) or has_queen_capture?(x, y)
-  end
-
-  def validate_north_move!(move)
-    validate_move!(move, Piece::WHITE)
-    validate_north_direction!(move)
-  end
-
-  def validate_south_move!(move)
-    validate_move!(move, Piece::BLACK)
-    validate_south_direction!(move)
-  end
-
-  def validate_south_direction!(move)
-    return true if simple_sw_move?(move) or simple_se_move?(move)
-    return true if simple_capture_move?(move)
-
-    return true if queen_simple_move?(move)
-    return true if queen_capture_move?(move)
-    raise "Invalid south direction for #{move}"
-
-  end
-
-  def validate_north_direction!(move)
-    return true if simple_nw_move?(move) or simple_ne_move?(move)
-    return true if simple_capture_move?(move)
-
-    return true if queen_simple_move?(move)
-    return true if queen_capture_move?(move)
-    raise "Invalid north direction for #{move}"
-  end
-
-
-  def validate_move!(move, color)
-    validate_piece!(move, color)
-    validate_diagonal!(move)
-    validate_occupied_cell!(move)
-    true
   end
 
   private
+  def allowed_moves(cell)
+    piece = cell.piece
+    piece.allowed_moves(cell, self)
+  end
+
+  def move_capture(cell, to_x, to_y)
+    piece = cell.piece
+    piece.move_capture(cell, to_x, to_y, self)
+  end
+
+  def make_queen(x, y)
+    cell = get_cell(x, y)
+    cell.piece.make_queen!(cell)
+  end
+
+  def capture_piece(x, y)
+    set_piece(x, y, nil)
+  end
+
+  def move_piece(from_x, from_y, to_x, to_y)
+    piece = get_piece(from_x, from_y)
+    set_piece(from_x, from_y, nil)
+    set_piece(to_x, to_y, piece)
+  end
+
   def setup
     8.times do |i|
       8.times do |j|

@@ -21,8 +21,7 @@ class Heuristic
   private
   def capture
     captures = player_cells.map do |k, cell|
-      capture = board.has_capture?(cell.row, cell.col)
-      p capture
+      capture = board.has_capture?(cell.row, cell.col, false)
 
       if capture
         return {
