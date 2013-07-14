@@ -34,6 +34,26 @@ class Board
     get_cell(row, col).piece = piece
   end
 
+  def winner
+    white = 0
+    black = 0
+    cells.each do |key, cell|
+      piece = cell.piece
+      if piece
+        piece.color == Piece::WHITE ? white += 1 : black += 1
+      end
+    end
+
+    return Piece::BLACK if white == 0
+    return Piece::WHITE if black == 0
+
+    nil
+  end
+
+  def has_win?
+    winner
+  end
+
   def move_piece!(action, color)
     move = action.move
     cell = get_cell(move[0], move[1])
@@ -63,7 +83,6 @@ class Board
     end
   end
 
-  private
   def allowed_moves(cell)
     piece = cell.piece
     piece.allowed_moves(cell, self)
@@ -73,6 +92,8 @@ class Board
     piece = cell.piece
     piece.move_capture(cell, to_x, to_y, self)
   end
+
+  private
 
   def make_queen(x, y)
     cell = get_cell(x, y)

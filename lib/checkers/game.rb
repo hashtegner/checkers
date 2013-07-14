@@ -27,11 +27,16 @@ class Game
   def make_move
     continue = current.start_move(&method(:on_move))
 
-    unless continue
-      switch_player!
-    end
+    winner = board.winner
+    if winner
+      p "#{current} => #{winner} Winner!!!"
+    else
+      unless continue
+        switch_player!
+      end
 
-    make_move
+      make_move
+    end
   end
 
   def on_move(player)

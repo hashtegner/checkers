@@ -27,21 +27,19 @@ class Piece
   end
 
   def allowed_moves(current_cell, board)
-    if queen?
-      QueenPiece.possible_moves(current_cell, board)
-    else
-      PeonPiece.possible_moves(current_cell, board)
-    end
+    clazz_move.possible_moves(current_cell, board)
   end
 
   def move_capture(cell, to_x, to_y, board)
-    if queen?
-    else
-      PeonPiece.move_capture(cell, to_x, to_y, board)
-    end
+    clazz_move.move_capture(cell, to_x, to_y, board)
   end
 
   private
+  private
+  def clazz_move
+    queen? ? QueenPiece : PeonPiece
+  end
+
   def piece_drawn
     return "X"if queen
     "x"
