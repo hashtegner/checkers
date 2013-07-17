@@ -1,16 +1,6 @@
 class Heuristic
   attr_accessor :current_board, :color
   INFINITY = 100_000
-   BOARD_WEIGHT = [
-                   [   4, nil,   4, nil,   4, nil,   4, nil],
-                   [ nil,   3, nil,   3, nil,   3, nil,   4],
-                   [   4, nil,   2, nil,   2, nil,   3, nil],
-                   [ nil,   3, nil,   1, nil,   2, nil,   4],
-                   [   4, nil,   2, nil,   1, nil,   3, nil],
-                   [ nil,   3, nil,   2, nil,   2, nil,   4],
-                   [   4, nil,   3, nil,   3, nil,   3, nil],
-                   [ nil,   4, nil,   4, nil,   4, nil,   4],
-                 ]
 
   def initialize(board, color)
     @current_board = board
@@ -25,20 +15,28 @@ class Heuristic
     to_x, to_y = move[:to]
 
     capture = current_board.move_capture(move[:from_cell], to_x, to_y)
-    capture_code = "1" if capture
+    if capture
+      capture_code = continue_capture(move[:from], move[:to]) ? "2" : 1
+    end
 
     "6#{capture_code}#{from_x}#{from_y}#{to_x}#{to_y}"
   end
 
   private
-   def capture_move
-    capture_moves.sample
+  def capture_move
+    capture_moves(current_board).sample
   end
 
-  def capture_moves
-    capture_moves = current_player_moves(current_board, color).reduce([]) do |buffer, move|
+  def continue_capture(from, to)
+    cloned_board = clone_board(current_board)
+    apply_move(cloned_board, {from: from, to: to})
+    !capture_moves(cloned_board).empty?
+  end
+
+  def capture_moves(board)
+    capture_moves = current_player_moves(board, color).reduce([]) do |buffer, move|
       to = move[:to]
-      capture = current_board.move_capture(move[:from_cell], to[0], to[1])
+      capture = board.move_capture(move[:from_cell], to[0], to[1])
       buffer << {from_cell: move[:from_cell], from: move[:from], to: to} if capture
 
       buffer
@@ -81,52 +79,21 @@ class Heuristic
   end
 
   def evaluate(board)
-    player_value = 0
-    opponent_value = 0
-
+    black = 0
+    white = 0
 
     board.cells.each do |key, cell|
       piece = cell.piece
       if piece
-        if piece.color == Piece::WHITE
-          player_value += calculate_value(cell, Piece::WHITE)
-        else
-          opponent_value += calculate_value(cell, Piece::BLACK)
-        end
+        piece.color == Piece::BLACK ? black += 1 : white += 1
       end
     end
-
-    unless current_player_moves(board, Piece::BLACK).empty?
-      opponent_value += 50
-    end
-
-    player_value - opponent_value
-  end
-
-  def calculate_value(cell, color)
-    row, col, piece = cell.row, cell.col, cell.piece
 
     if color == Piece::BLACK
-      value = case row
-        when 7 then 10
-        when 5 then 7
-        when 6 then 7
-        else 5
-      end
+      return black - white
     else
-      value = case row
-        when 0 then 10
-        when 1 then 7
-        when 2 then 7
-        else 5
-      end
+      return white - black
     end
-
-    if piece and piece.queen?
-      value = 10
-    end
-
-    value * BOARD_WEIGHT[row][col]
   end
 
   def switch_player(player_color)
