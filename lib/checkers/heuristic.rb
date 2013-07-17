@@ -8,7 +8,7 @@ class Heuristic
   end
 
   def get_move
-    capture_code = "0"
+    capture_code = 0
 
     move = capture_move || best_move_negamax
     from_x, from_y = move[:from]
@@ -16,7 +16,7 @@ class Heuristic
 
     capture = current_board.move_capture(move[:from_cell], to_x, to_y)
     if capture
-      capture_code = continue_capture(move[:from], move[:to]) ? "2" : 1
+      capture_code = continue_capture(move[:from], move[:to]) ? 2 : 1
     end
 
     "6#{capture_code}#{from_x}#{from_y}#{to_x}#{to_y}"
