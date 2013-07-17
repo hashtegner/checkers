@@ -54,6 +54,8 @@ class Game
         p "#{current} make invalid move"
         p "#{current} => #{e.message}"
         print e.backtrace.join("\n")
+        print "\n"
+        display
         exit
       end
     elsif action.finish_game?

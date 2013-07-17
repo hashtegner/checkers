@@ -7,7 +7,7 @@ module Actions
       when 4
         Actions::Positive.new data
       when 5
-        Actions::Positive.new data
+        Actions::Negative.new data
       when 6
         Actions::MovePiece.new data
       when 9

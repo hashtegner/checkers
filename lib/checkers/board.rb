@@ -42,6 +42,8 @@ class Board
 
     return Piece::BLACK if white == 0
     return Piece::WHITE if black == 0
+    return Piece::BLACK if player_moves(Piece::WHITE).empty?
+    return Piece::WHITE if player_moves(Piece::BLACK).empty?
 
     nil
   end
@@ -89,20 +91,38 @@ class Board
     piece.move_capture(cell, to_x, to_y, self)
   end
 
-  private
-  def make_queen(x, y)
-    cell = get_cell(x, y)
-    cell.piece.make_queen!(cell)
+
+  def move_piece(from_x, from_y, to_x, to_y)
+    piece = get_piece(from_x, from_y)
+    set_piece(from_x, from_y, nil)
+    set_piece(to_x, to_y, piece)
   end
 
   def capture_piece(x, y)
     set_piece(x, y, nil)
   end
 
-  def move_piece(from_x, from_y, to_x, to_y)
-    piece = get_piece(from_x, from_y)
-    set_piece(from_x, from_y, nil)
-    set_piece(to_x, to_y, piece)
+  def player_moves(player_color)
+    player_cells(player_color).reduce([]) do |buffer, val|
+      cell = val[1]
+      moves = allowed_moves(cell)
+      moves.each do |m|
+        buffer << {from_cell: cell, from: [cell.row, cell.col], to: m}
+      end
+
+      buffer
+    end
+  end
+
+  def player_cells(player_color)
+    cells
+      .select { |key, cell| cell.piece and cell.piece.color == player_color }
+  end
+
+  private
+  def make_queen(x, y)
+    cell = get_cell(x, y)
+    cell.piece.make_queen!(cell)
   end
 
   def setup
