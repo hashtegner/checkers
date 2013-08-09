@@ -27,12 +27,18 @@ class PeonPiece
 
     private
     def capture(cell, board)
-      [
-        capture_delta(board, cell, 1, -1),
-        capture_delta(board, cell, 1, 1),
-        capture_delta(board, cell, -1, -1),
-        capture_delta(board, cell, -1, 1)
-      ].compact
+      piece = cell.piece
+      if piece.color == Piece::BLACK
+        [
+          capture_delta(board, cell, -1, -1),
+          capture_delta(board, cell, -1, 1)
+        ].compact
+      else
+        [
+          capture_delta(board, cell, 1, -1),
+          capture_delta(board, cell, 1, 1)
+        ].compact
+      end
     end
 
     def move_delta(board, cell, delta_x, delta_y)
